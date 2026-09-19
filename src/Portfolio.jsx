@@ -1,15 +1,21 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 /* ============================================================================
-   ICONES — remplacement de lucide-react par des SVG inline
+   ICONES - remplacement de lucide-react par des SVG inline
    ----------------------------------------------------------------------------
    Raison du correctif : la page blanche vient presque toujours d'une erreur
    JS silencieuse au moment de l'import du module (version incompatible,
    package non installé, ou chargement via CDN sans build adapté). React
    n'affiche alors strictement rien, sans message visible. En définissant les
    icônes localement en SVG, on retire complètement cette dépendance externe
-   et donc ce point de défaillance — tout en gardant le même rendu visuel.
+   et donc ce point de défaillance - tout en gardant le même rendu visuel.
    ========================================================================= */
 
 function iconBase({ size = 24, className = "", children, ...props }) {
@@ -180,17 +186,6 @@ const Wrench = (props) =>
     ),
   });
 
-const Send = (props) =>
-  iconBase({
-    ...props,
-    children: (
-      <>
-        <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
-        <path d="m21.854 2.147-10.94 10.939" />
-      </>
-    ),
-  });
-
 const CheckCircle2 = (props) =>
   iconBase({
     ...props,
@@ -200,12 +195,6 @@ const CheckCircle2 = (props) =>
         <path d="m9 12 2 2 4-4" />
       </>
     ),
-  });
-
-const Circle = (props) =>
-  iconBase({
-    ...props,
-    children: <circle cx="12" cy="12" r="10" />,
   });
 
 const Shield = (props) =>
@@ -224,12 +213,141 @@ const Phone = (props) =>
     ),
   });
 
+const Globe = (props) =>
+  iconBase({
+    ...props,
+    children: (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+        <path d="M2 12h20" />
+      </>
+    ),
+  });
+
+/* ============================================================================
+   LANGUE - contexte + dictionnaire de traductions
+   ========================================================================= */
+
+const LanguageContext = createContext({ lang: "fr", toggleLang: () => {} });
+const useLang = () => useContext(LanguageContext);
+
+// Petit utilitaire : pick({fr:"...", en:"..."}, lang) -> string
+function pick(field, lang) {
+  if (field && typeof field === "object" && (field.fr || field.en)) {
+    return field[lang] ?? field.fr;
+  }
+  return field;
+}
+
+const UI = {
+  fr: {
+    navLinks: {
+      hero: "Accueil",
+      skills: "Compétences",
+      projects: "Projets",
+      experience: "Parcours",
+      contact: "Contact",
+    },
+    contactCta: "Me contacter",
+    heroCta1: "Voir mes projets",
+    heroCta2: "Télécharger CV",
+    heroCta3: "GitHub",
+    skillsHeading: {
+      title: "Compétences techniques",
+      description:
+        "Un ensemble d'outils choisis pour livrer des produits robustes, du premier prototype à la mise en production.",
+    },
+    certHeading: {
+      title: "Certifications en cours - Hack The Box",
+      description:
+        "Progression actuelle de mes parcours de certification en cybersécurité.",
+    },
+    certComplete: "% complété",
+    projectsHeading: {
+      title: "Projets vedettes",
+      description:
+        "Des projets collégiaux conçus en équipe, du cahier des charges à la mise en production.",
+    },
+    projectDemo: "Démo live",
+    projectCode: "Code source",
+    projectNoCode: "Projet académique - code non public",
+    experienceHeading: {
+      title: "Parcours & expérience",
+      description:
+        "Les étapes qui ont construit mon approche du développement logiciel.",
+    },
+    contactHeading: {
+      title: "Me contacter",
+      description:
+        "N'hésitez pas à me joindre directement par courriel ou par téléphone - je réponds sous 24 à 48h.",
+    },
+    contactFindMe: "Retrouvez-moi aussi sur",
+    contactCopy: "Copier",
+    contactCopied: "Copié !",
+    footerRights: "Tous droits réservés.",
+  },
+  en: {
+    navLinks: {
+      hero: "Home",
+      skills: "Skills",
+      projects: "Projects",
+      experience: "Experience",
+      contact: "Contact",
+    },
+    contactCta: "Contact me",
+    heroCta1: "View my projects",
+    heroCta2: "Download CV",
+    heroCta3: "GitHub",
+    skillsHeading: {
+      title: "Technical skills",
+      description:
+        "A set of tools chosen to ship robust products, from the first prototype to production.",
+    },
+    certHeading: {
+      title: "In-progress certifications - Hack The Box",
+      description: "Current progress on my cybersecurity certification tracks.",
+    },
+    certComplete: "% complete",
+    projectsHeading: {
+      title: "Featured projects",
+      description:
+        "College projects built as a team, from requirements gathering to production.",
+    },
+    projectDemo: "Live demo",
+    projectCode: "Source code",
+    projectNoCode: "Academic project - code not public",
+    experienceHeading: {
+      title: "Background & experience",
+      description: "The milestones that shaped my approach to software development.",
+    },
+    contactHeading: {
+      title: "Get in touch",
+      description:
+        "Feel free to reach me directly by email or phone - I usually reply within 24 to 48 hours.",
+    },
+    contactFindMe: "You can also find me on",
+    contactCopy: "Copy",
+    contactCopied: "Copied!",
+    footerRights: "All rights reserved.",
+  },
+};
+
 const PROFILE = {
   name: "Amine El Ghazi",
-  role: "Développeur Full-Stack & Cybersécurité",
-  availability: "Disponible pour un stage",
-  bio: "Étudiant en Techniques de l'informatique, je conçois des applications full-stack avec NestJS et React, et je développe des jeux 2D avec Unity. Curieux et rigoureux, je m'investis aussi en cybersécurité à travers des certifications Hack The Box. Je cherche un stage où mettre ces compétences au service de projets concrets.",
-  location: "Montréal, QC, Canada",
+  role: {
+    fr: "Développeur Full-Stack & Cybersécurité",
+    en: "Full-Stack Developer & Cybersecurity",
+  },
+  availability: {
+    fr: "Disponible pour un stage",
+    en: "Available for an internship",
+  },
+  bio: {
+    fr: "Étudiant en Techniques de l'informatique, je conçois des applications full-stack avec NestJS et React, et je développe des jeux 2D avec Unity. Curieux et rigoureux, je m'investis aussi en cybersécurité à travers des certifications Hack The Box. Je cherche un stage où mettre ces compétences au service de projets concrets.",
+    en: "A Computer Science Technology student, I build full-stack applications with NestJS and React, and develop 2D games with Unity. Curious and rigorous, I'm also invested in cybersecurity through Hack The Box certifications. I'm looking for an internship where I can put these skills to work on real projects.",
+  },
+  location: { fr: "Montréal, QC, Canada", en: "Montreal, QC, Canada" },
   email: "amineelghazi100@hotmail.com",
   phone: "438-410-1304",
 
@@ -240,25 +358,17 @@ const PROFILE = {
   },
 };
 
-const NAV_LINKS = [
-  { id: "hero", label: "Accueil" },
-  { id: "skills", label: "Compétences" },
-  { id: "projects", label: "Projets" },
-  { id: "experience", label: "Parcours" },
-  { id: "contact", label: "Contact" },
-];
-
 const STATS = [
-  { value: "5+", label: "Langages maîtrisés" },
-  { value: "2", label: "Projets collégiaux livrés" },
-  { value: "3", label: "Certifications HTB en cours" },
-  { value: "2027", label: "Fin de formation prévue" },
+  { value: "5+", label: { fr: "Langages maîtrisés", en: "Languages mastered" } },
+  { value: "2", label: { fr: "Projets collégiaux livrés", en: "College projects shipped" } },
+  { value: "3", label: { fr: "Certifications HTB en cours", en: "HTB certifications in progress" } },
+  { value: "2027", label: { fr: "Fin de formation prévue", en: "Expected graduation" } },
 ];
 
 const SKILL_CATEGORIES = [
   {
     key: "languages",
-    title: "Langages",
+    title: { fr: "Langages", en: "Languages" },
     icon: Code2,
     accent: "cyan",
     skills: [
@@ -271,7 +381,7 @@ const SKILL_CATEGORIES = [
   },
   {
     key: "frameworks",
-    title: "Frameworks",
+    title: { fr: "Frameworks", en: "Frameworks" },
     icon: Server,
     accent: "violet",
     skills: [
@@ -284,7 +394,7 @@ const SKILL_CATEGORIES = [
   },
   {
     key: "database",
-    title: "Bases de données",
+    title: { fr: "Bases de données", en: "Databases" },
     icon: Database,
     accent: "emerald",
     skills: [
@@ -295,7 +405,7 @@ const SKILL_CATEGORIES = [
   },
   {
     key: "tools",
-    title: "Outils & Pratiques",
+    title: { fr: "Outils & Pratiques", en: "Tools & Practices" },
     icon: Wrench,
     accent: "cyan",
     skills: [
@@ -317,9 +427,14 @@ const CERTIFICATIONS = [
 const PROJECTS = [
   {
     id: "u-owl",
-    title: "U-Owl — Location de camions en temps réel",
-    description:
-      "Projet collégial de location de camions avec visualisation en temps réel de la disponibilité du stock sur une carte interactive. Développement du frontend (localisation live, UX), de la communication frontend-backend et de l'authentification, contribution ponctuelle au backend, et conteneurisation avec Docker.",
+    title: {
+      fr: "U-Owl - Location de camions en temps réel",
+      en: "U-Owl - Real-Time Truck Rental",
+    },
+    description: {
+      fr: "Projet collégial de location de camions avec visualisation en temps réel de la disponibilité du stock sur une carte interactive. Développement du frontend (localisation live, UX), de la communication frontend-backend et de l'authentification, contribution ponctuelle au backend, et conteneurisation avec Docker.",
+      en: "A college truck-rental project featuring real-time visualization of stock availability on an interactive map. Built the frontend (live location tracking, UX), the frontend-backend communication and authentication, contributed to the backend, and containerized the app with Docker.",
+    },
     tags: ["React", "TypeScript", "Vite", "NestJS", "Docker"],
     image: "/u-owl.png",
     liveUrl: null,
@@ -332,10 +447,15 @@ const PROJECTS = [
   },
   {
     id: "cinetrack",
-    title: "CineTrack — Découverte & suivi de films/séries",
-    description:
-      "Plateforme collégiale de découverte et de suivi de films et séries (fiches, favoris, commentaires) intégrant une API externe pour les métadonnées. Product Owner pour une équipe de 6 développeurs (gestion Jira, epics, spécification des exigences) ; développement de la vérification de compte par courriel et de la fonctionnalité de favoris de bout en bout.",
-    tags: ["C#", "WPF", "SQL", "Jira", "Gestion de produit"],
+    title: {
+      fr: "CineTrack - Découverte & suivi de films/séries",
+      en: "CineTrack - Movie & TV Show Discovery & Tracking",
+    },
+    description: {
+      fr: "Plateforme collégiale de découverte et de suivi de films et séries (fiches, favoris, commentaires) intégrant une API externe pour les métadonnées. Product Owner pour une équipe de 6 développeurs (gestion Jira, epics, spécification des exigences) ; développement de la vérification de compte par courriel et de la fonctionnalité de favoris de bout en bout.",
+      en: "A college platform for discovering and tracking movies and TV shows (detail pages, favorites, comments) integrating an external API for metadata. Product Owner for a team of 6 developers (Jira management, epics, requirements specification); built email account verification and the end-to-end favorites feature.",
+    },
+    tags: ["C#", "WPF", "SQL", "Jira", "Product Management"],
     image: "/cinetrack.png",
     liveUrl: null,
     codeUrls: [],
@@ -347,29 +467,47 @@ const PROJECTS = [
 const EXPERIENCE = [
   {
     id: "exp-1",
-    period: "Février 2026 — Mai 2026",
-    title: "Product Owner & Développeur — CineTrack",
-    org: "Projet collégial",
-    description:
-      "Product Owner pour une équipe de 6 développeurs : gestion du projet sur Jira, rédaction des epics et cas d'utilisation. Développement de la vérification de compte par courriel et de la fonctionnalité de favoris de bout en bout (base de données, ViewModels WPF).",
+    period: "Février 2026 - Mai 2026",
+    periodEn: "February 2026 - May 2026",
+    title: {
+      fr: "Product Owner & Développeur - CineTrack",
+      en: "Product Owner & Developer - CineTrack",
+    },
+    org: { fr: "Projet collégial", en: "College project" },
+    description: {
+      fr: "Product Owner pour une équipe de 6 développeurs : gestion du projet sur Jira, rédaction des epics et cas d'utilisation. Développement de la vérification de compte par courriel et de la fonctionnalité de favoris de bout en bout (base de données, ViewModels WPF).",
+      en: "Product Owner for a team of 6 developers: managed the project on Jira, wrote epics and use cases. Built email account verification and the end-to-end favorites feature (database, WPF ViewModels).",
+    },
     type: "work",
   },
   {
     id: "exp-2",
-    period: "Janvier 2026 — Mai 2026",
-    title: "Développeur Full-Stack — U-Owl",
-    org: "Projet collégial",
-    description:
-      "Développement du frontend React/TypeScript (localisation de stock en temps réel), implémentation de la communication frontend-backend et de l'authentification, contribution au backend NestJS et déploiement avec Docker.",
+    period: "Janvier 2026 - Mai 2026",
+    periodEn: "January 2026 - May 2026",
+    title: {
+      fr: "Développeur Full-Stack - U-Owl",
+      en: "Full-Stack Developer - U-Owl",
+    },
+    org: { fr: "Projet collégial", en: "College project" },
+    description: {
+      fr: "Développement du frontend React/TypeScript (localisation de stock en temps réel), implémentation de la communication frontend-backend et de l'authentification, contribution au backend NestJS et déploiement avec Docker.",
+      en: "Built the React/TypeScript frontend (real-time stock location tracking), implemented frontend-backend communication and authentication, contributed to the NestJS backend, and deployed with Docker.",
+    },
     type: "work",
   },
   {
     id: "exp-3",
-    period: "2023 — 2027",
-    title: "Technique de l'informatique (420.B0)",
-    org: "Cégep Marie-Victorin",
-    description:
-      "Formation collégiale en développement logiciel, avec un intérêt marqué pour la cybersécurité et les bonnes pratiques (REST API, Agile/Scrum, UML, MVC).",
+    period: "2023 - 2027",
+    periodEn: "2023 - 2027",
+    title: {
+      fr: "Technique de l'informatique (420.B0)",
+      en: "Computer Science Technology (420.B0)",
+    },
+    org: { fr: "Cégep Marie-Victorin", en: "Cégep Marie-Victorin" },
+    description: {
+      fr: "Formation collégiale en développement logiciel, avec un intérêt marqué pour la cybersécurité et les bonnes pratiques (REST API, Agile/Scrum, UML, MVC).",
+      en: "College-level software development program, with a strong focus on cybersecurity and best practices (REST APIs, Agile/Scrum, UML, MVC).",
+    },
     type: "education",
   },
 ];
@@ -446,10 +584,31 @@ function scrollToId(id) {
    NAVBAR
    ========================================================================= */
 
+function LanguageToggle({ compact = false }) {
+  const { lang, toggleLang } = useLang();
+  return (
+    <button
+      onClick={toggleLang}
+      aria-label={lang === "fr" ? "Switch to English" : "Passer en français"}
+      className={`inline-flex items-center gap-1.5 rounded-lg border border-[#232a3b] bg-[#161b26]/60 text-slate-200 backdrop-blur transition-colors hover:border-slate-600 ${
+        compact ? "px-3 py-2 text-xs" : "px-3.5 py-2 text-sm"
+      }`}
+    >
+      <Globe size={compact ? 14 : 15} />
+      <span className={lang === "fr" ? "text-slate-100" : "text-slate-500"}>FR</span>
+      <span className="text-slate-600">/</span>
+      <span className={lang === "en" ? "text-slate-100" : "text-slate-500"}>EN</span>
+    </button>
+  );
+}
+
 function Navbar() {
+  const { lang } = useLang();
+  const t = UI[lang];
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const activeSection = useActiveSection(NAV_LINKS.map((l) => l.id));
+  const navIds = ["hero", "skills", "projects", "experience", "contact"];
+  const activeSection = useActiveSection(navIds);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -475,25 +634,25 @@ function Navbar() {
           <button
             onClick={() => handleNavClick("hero")}
             className="text-[15px] font-semibold tracking-tight text-slate-100"
-            aria-label="Retour à l'accueil"
+            aria-label={lang === "fr" ? "Retour à l'accueil" : "Back to home"}
           >
             {PROFILE.name}
             <span className="text-cyan-400">.</span>
           </button>
 
           <ul className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.id}>
+            {navIds.map((id) => (
+              <li key={id}>
                 <button
-                  onClick={() => handleNavClick(link.id)}
+                  onClick={() => handleNavClick(id)}
                   className={`relative px-3.5 py-2 text-sm rounded-lg transition-colors ${
-                    activeSection === link.id
+                    activeSection === id
                       ? "text-slate-100"
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  {link.label}
-                  {activeSection === link.id && (
+                  {t.navLinks[id]}
+                  {activeSection === id && (
                     <motion.span
                       layoutId="nav-active-pill"
                       className="absolute inset-0 -z-10 rounded-lg bg-white/5 border border-white/10"
@@ -505,23 +664,27 @@ function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-2">
+            <LanguageToggle />
             <button
               onClick={() => handleNavClick("contact")}
               className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-[#0b0f17] transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
-              Me contacter
+              {t.contactCta}
             </button>
           </div>
 
-          <button
-            className="md:hidden text-slate-200"
-            onClick={() => setOpen((o) => !o)}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageToggle compact />
+            <button
+              className="text-slate-200"
+              onClick={() => setOpen((o) => !o)}
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={open}
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
 
         <AnimatePresence>
@@ -534,17 +697,17 @@ function Navbar() {
               className="md:hidden overflow-hidden border-t border-[#232a3b]"
             >
               <ul className="flex flex-col gap-1 px-4 py-3">
-                {NAV_LINKS.map((link) => (
-                  <li key={link.id}>
+                {navIds.map((id) => (
+                  <li key={id}>
                     <button
-                      onClick={() => handleNavClick(link.id)}
+                      onClick={() => handleNavClick(id)}
                       className={`w-full text-left px-3 py-2.5 rounded-lg text-sm ${
-                        activeSection === link.id
+                        activeSection === id
                           ? "bg-white/5 text-slate-100"
                           : "text-slate-400"
                       }`}
                     >
-                      {link.label}
+                      {t.navLinks[id]}
                     </button>
                   </li>
                 ))}
@@ -553,7 +716,7 @@ function Navbar() {
                     onClick={() => handleNavClick("contact")}
                     className="w-full rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-medium text-[#0b0f17]"
                   >
-                    Me contacter
+                    {t.contactCta}
                   </button>
                 </li>
               </ul>
@@ -570,6 +733,8 @@ function Navbar() {
    ========================================================================= */
 
 function Hero() {
+  const { lang } = useLang();
+  const t = UI[lang];
   const [typed, setTyped] = useState("");
 
   useEffect(() => {
@@ -606,19 +771,18 @@ function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            {PROFILE.availability}
+            {pick(PROFILE.availability, lang)}
           </div>
 
           <h1 className="mt-6 text-4xl font-semibold leading-[1.1] tracking-tight text-slate-50 sm:text-5xl lg:text-6xl">
-          
             <br />
             <span className="bg-gradient-to-r from-cyan-400 via-cyan-300 to-violet-400 bg-clip-text text-transparent">
-              {PROFILE.role}
+              {pick(PROFILE.role, lang)}
             </span>
           </h1>
 
           <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-400 sm:text-lg">
-            {PROFILE.bio}
+            {pick(PROFILE.bio, lang)}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -626,7 +790,7 @@ function Hero() {
               onClick={() => scrollToId("projects")}
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 px-5 py-3 text-sm font-medium text-white shadow-lg shadow-cyan-500/10 transition-transform hover:scale-[1.03] active:scale-[0.98]"
             >
-              Voir mes projets
+              {t.heroCta1}
               <ArrowUpRight size={16} />
             </button>
             <a
@@ -634,17 +798,17 @@ function Hero() {
               className="inline-flex items-center gap-2 rounded-xl border border-[#232a3b] bg-[#161b26]/60 px-5 py-3 text-sm font-medium text-slate-200 backdrop-blur transition-colors hover:border-slate-600"
             >
               <Download size={16} />
-              Télécharger CV
+              {t.heroCta2}
             </a>
             <a
               href={PROFILE.socials.github}
               target="_blank"
               rel="noreferrer"
-              aria-label="Profil GitHub"
+              aria-label="GitHub profile"
               className="inline-flex items-center gap-2 rounded-xl border border-[#232a3b] bg-[#161b26]/60 px-4 py-3 text-sm font-medium text-slate-200 backdrop-blur transition-colors hover:border-slate-600"
             >
               <Github size={16} />
-              GitHub
+              {t.heroCta3}
             </a>
           </div>
         </motion.div>
@@ -680,12 +844,13 @@ function Hero() {
    ========================================================================= */
 
 function StatsBanner() {
+  const { lang } = useLang();
   return (
     <section className="border-y border-[#171d2b] bg-[#0d121c] px-4 sm:px-6 py-12">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 sm:grid-cols-4">
         {STATS.map((stat, idx) => (
           <motion.div
-            key={stat.label}
+            key={stat.value + idx}
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -695,7 +860,7 @@ function StatsBanner() {
             <div className="text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl">
               {stat.value}
             </div>
-            <div className="mt-1 text-sm text-slate-500">{stat.label}</div>
+            <div className="mt-1 text-sm text-slate-500">{pick(stat.label, lang)}</div>
           </motion.div>
         ))}
       </div>
@@ -708,6 +873,7 @@ function StatsBanner() {
    ========================================================================= */
 
 function SkillCard({ category, index }) {
+  const { lang } = useLang();
   const Icon = category.icon;
   const accent = ACCENT_STYLES[category.accent];
 
@@ -723,7 +889,7 @@ function SkillCard({ category, index }) {
         <div className={`rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 ${accent.text}`}>
           <Icon size={18} aria-hidden="true" />
         </div>
-        <h3 className="text-base font-medium text-slate-100">{category.title}</h3>
+        <h3 className="text-base font-medium text-slate-100">{pick(category.title, lang)}</h3>
       </div>
 
       <ul className="mt-5 space-y-4">
@@ -750,13 +916,12 @@ function SkillCard({ category, index }) {
 }
 
 function Skills() {
+  const { lang } = useLang();
+  const t = UI[lang];
   return (
     <section id="skills" className="px-4 sm:px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          title="Compétences techniques"
-          description="Un ensemble d'outils choisis pour livrer des produits robustes, du premier prototype à la mise en production."
-        />
+        <SectionHeading title={t.skillsHeading.title} description={t.skillsHeading.description} />
         <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {SKILL_CATEGORIES.map((category, idx) => (
             <SkillCard category={category} index={idx} key={category.key} />
@@ -770,6 +935,8 @@ function Skills() {
 }
 
 function Certifications() {
+  const { lang } = useLang();
+  const t = UI[lang];
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -783,12 +950,8 @@ function Certifications() {
           <Shield size={18} aria-hidden="true" />
         </div>
         <div>
-          <h3 className="text-base font-medium text-slate-100">
-            Certifications en cours — Hack The Box
-          </h3>
-          <p className="text-sm text-slate-500">
-            Progression actuelle de mes parcours de certification en cybersécurité.
-          </p>
+          <h3 className="text-base font-medium text-slate-100">{t.certHeading.title}</h3>
+          <p className="text-sm text-slate-500">{t.certHeading.description}</p>
         </div>
       </div>
 
@@ -807,7 +970,10 @@ function Certifications() {
                 className="h-full rounded-full bg-emerald-500"
               />
             </div>
-            <div className="mt-1 text-xs text-slate-500">{cert.level}% complété</div>
+            <div className="mt-1 text-xs text-slate-500">
+              {cert.level}
+              {t.certComplete}
+            </div>
           </li>
         ))}
       </ul>
@@ -845,6 +1011,8 @@ function SectionHeading({ title, description, align = "left" }) {
    ========================================================================= */
 
 function ProjectCard({ project, index }) {
+  const { lang } = useLang();
+  const t = UI[lang];
   return (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
@@ -860,7 +1028,7 @@ function ProjectCard({ project, index }) {
         {project.image ? (
           <img
             src={project.image}
-            alt={`Aperçu du projet ${project.title}`}
+            alt={pick(project.title, lang)}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -873,9 +1041,9 @@ function ProjectCard({ project, index }) {
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="text-lg font-medium text-slate-100">{project.title}</h3>
+        <h3 className="text-lg font-medium text-slate-100">{pick(project.title, lang)}</h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">
-          {project.description}
+          {pick(project.description, lang)}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -898,7 +1066,7 @@ function ProjectCard({ project, index }) {
               className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-200 hover:text-cyan-400"
             >
               <ExternalLink size={15} />
-              Démo live
+              {t.projectDemo}
             </a>
           )}
 
@@ -910,7 +1078,7 @@ function ProjectCard({ project, index }) {
               className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-400 hover:text-slate-200"
             >
               <Github size={15} />
-              Code source
+              {t.projectCode}
             </a>
           )}
 
@@ -929,9 +1097,7 @@ function ProjectCard({ project, index }) {
             ))}
 
           {!project.liveUrl && !project.codeUrls?.length && (
-            <span className="text-sm text-slate-500">
-              Projet académique — code non public
-            </span>
+            <span className="text-sm text-slate-500">{t.projectNoCode}</span>
           )}
         </div>
       </div>
@@ -940,13 +1106,12 @@ function ProjectCard({ project, index }) {
 }
 
 function Projects() {
+  const { lang } = useLang();
+  const t = UI[lang];
   return (
     <section id="projects" className="px-4 sm:px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-4xl">
-        <SectionHeading
-          title="Projets vedettes"
-          description="Des projets collégiaux conçus en équipe, du cahier des charges à la mise en production."
-        />
+        <SectionHeading title={t.projectsHeading.title} description={t.projectsHeading.description} />
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {PROJECTS.map((project, idx) => (
             <ProjectCard project={project} index={idx} key={project.id} />
@@ -962,6 +1127,7 @@ function Projects() {
    ========================================================================= */
 
 function TimelineItem({ item, index, isLast }) {
+  const { lang } = useLang();
   return (
     <motion.div
       initial={{ opacity: 0, x: -16 }}
@@ -989,24 +1155,26 @@ function TimelineItem({ item, index, isLast }) {
       </span>
 
       <div className="text-xs font-medium uppercase tracking-wide text-slate-500">
-        {item.period}
+        {lang === "en" ? item.periodEn : item.period}
       </div>
-      <h3 className="mt-1.5 text-base font-medium text-slate-100">{item.title}</h3>
-      <div className="text-sm text-slate-400">{item.org}</div>
+      <h3 className="mt-1.5 text-base font-medium text-slate-100">{pick(item.title, lang)}</h3>
+      <div className="text-sm text-slate-400">{pick(item.org, lang)}</div>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-400">
-        {item.description}
+        {pick(item.description, lang)}
       </p>
     </motion.div>
   );
 }
 
 function Experience() {
+  const { lang } = useLang();
+  const t = UI[lang];
   return (
     <section id="experience" className="px-4 sm:px-6 py-24 sm:py-28">
       <div className="mx-auto max-w-3xl">
         <SectionHeading
-          title="Parcours & expérience"
-          description="Les étapes qui ont construit mon approche du développement logiciel."
+          title={t.experienceHeading.title}
+          description={t.experienceHeading.description}
         />
         <div className="mt-12">
           {EXPERIENCE.map((item, idx) => (
@@ -1024,137 +1192,54 @@ function Experience() {
 }
 
 /* ============================================================================
-   CONTACT
+   CONTACT - informations directes (sans formulaire d'envoi)
    ========================================================================= */
 
-function ContactForm() {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
-  const [status, setStatus] = useState("idle"); // idle | submitting | sent
+function CopyableRow({ icon, value, href, accent }) {
+  const { lang } = useLang();
+  const t = UI[lang];
+  const [copied, setCopied] = useState(false);
 
-  const handleChange = (field) => (e) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      setStatus("submitting");
-      // Remplace ce bloc par ton appel API / service d'envoi d'email.
-      setTimeout(() => {
-        setStatus("sent");
-      }, 900);
-    },
-    []
-  );
-
-  if (status === "sent") {
-    return (
-      <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-[#232a3b] bg-[#161b26]/60 p-10 text-center backdrop-blur">
-        <CheckCircle2 className="text-emerald-400" size={32} />
-        <h3 className="mt-4 text-lg font-medium text-slate-100">Message envoyé</h3>
-        <p className="mt-2 max-w-xs text-sm text-slate-400">
-          Merci pour votre message, je reviens vers vous rapidement.
-        </p>
-        <button
-          onClick={() => {
-            setForm({ name: "", email: "", subject: "", message: "" });
-            setStatus("idle");
-          }}
-          className="mt-6 text-sm font-medium text-cyan-400 hover:text-cyan-300"
-        >
-          Envoyer un autre message
-        </button>
-      </div>
-    );
-  }
+  const handleCopy = async (e) => {
+    e.preventDefault();
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Le presse-papiers peut être indisponible selon le contexte ; le lien reste cliquable.
+      window.location.href = href;
+    }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="rounded-2xl border border-[#232a3b] bg-[#161b26]/60 p-6 backdrop-blur sm:p-8"
-    >
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="name" className="text-sm text-slate-300">
-            Nom
-          </label>
-          <input
-            id="name"
-            type="text"
-            required
-            value={form.name}
-            onChange={handleChange("name")}
-            placeholder="Votre nom"
-            className="mt-1.5 w-full rounded-lg border border-[#232a3b] bg-[#0e1420] px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-colors focus:border-cyan-500/60"
-          />
-        </div>
-        <div>
-          <label htmlFor="email" className="text-sm text-slate-300">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            value={form.email}
-            onChange={handleChange("email")}
-            placeholder="vous@exemple.com"
-            className="mt-1.5 w-full rounded-lg border border-[#232a3b] bg-[#0e1420] px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-colors focus:border-cyan-500/60"
-          />
-        </div>
-      </div>
-
-      <div className="mt-5">
-        <label htmlFor="subject" className="text-sm text-slate-300">
-          Sujet
-        </label>
-        <input
-          id="subject"
-          type="text"
-          required
-          value={form.subject}
-          onChange={handleChange("subject")}
-          placeholder="Sujet de votre message"
-          className="mt-1.5 w-full rounded-lg border border-[#232a3b] bg-[#0e1420] px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-colors focus:border-cyan-500/60"
-        />
-      </div>
-
-      <div className="mt-5">
-        <label htmlFor="message" className="text-sm text-slate-300">
-          Message
-        </label>
-        <textarea
-          id="message"
-          required
-          rows={5}
-          value={form.message}
-          onChange={handleChange("message")}
-          placeholder="Décrivez votre projet..."
-          className="mt-1.5 w-full resize-none rounded-lg border border-[#232a3b] bg-[#0e1420] px-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 outline-none transition-colors focus:border-cyan-500/60"
-        />
-      </div>
-
+    <div className="flex items-center gap-3 rounded-xl border border-[#232a3b] bg-[#161b26]/60 p-4 backdrop-blur transition-colors hover:border-slate-600">
+      <span className={`rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 ${accent}`}>
+        {icon}
+      </span>
+      <a href={href} className="flex-1 text-sm text-slate-300 hover:text-slate-100">
+        {value}
+      </a>
       <button
-        type="submit"
-        disabled={status === "submitting"}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-violet-500 px-5 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 sm:w-auto"
+        onClick={handleCopy}
+        className="shrink-0 text-xs font-medium text-slate-500 transition-colors hover:text-cyan-400"
       >
-        {status === "submitting" ? (
-          <>
-            <Circle className="animate-spin" size={16} />
-            Envoi en cours...
-          </>
+        {copied ? (
+          <span className="inline-flex items-center gap-1 text-emerald-400">
+            <CheckCircle2 size={13} />
+            {t.contactCopied}
+          </span>
         ) : (
-          <>
-            <Send size={16} />
-            Envoyer le message
-          </>
+          t.contactCopy
         )}
       </button>
-    </form>
+    </div>
   );
 }
 
 function Contact() {
+  const { lang } = useLang();
+  const t = UI[lang];
   const socialLinks = [
     { icon: Github, label: "GitHub", href: PROFILE.socials.github },
     { icon: Linkedin, label: "LinkedIn", href: PROFILE.socials.linkedin },
@@ -1162,61 +1247,50 @@ function Contact() {
 
   return (
     <section id="contact" className="px-4 sm:px-6 py-24 sm:py-28">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-3xl">
         <SectionHeading
-          title="Discutons de votre projet"
-          description="Une idée, un besoin technique ou simplement envie d'échanger : je réponds sous 24 à 48h."
+          title={t.contactHeading.title}
+          description={t.contactHeading.description}
+          align="center"
         />
 
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="flex flex-col justify-between gap-8">
-            <div className="space-y-4">
-              <a
-                href={`mailto:${PROFILE.email}`}
-                className="flex items-center gap-3 rounded-xl border border-[#232a3b] bg-[#161b26]/60 p-4 text-sm text-slate-300 backdrop-blur transition-colors hover:border-slate-600"
-              >
-                <span className="rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 text-cyan-400">
-                  <Mail size={16} />
-                </span>
-                {PROFILE.email}
-              </a>
-              <a
-                href={`tel:${PROFILE.phone.replace(/[^0-9+]/g, "")}`}
-                className="flex items-center gap-3 rounded-xl border border-[#232a3b] bg-[#161b26]/60 p-4 text-sm text-slate-300 backdrop-blur transition-colors hover:border-slate-600"
-              >
-                <span className="rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 text-emerald-400">
-                  <Phone size={16} />
-                </span>
-                {PROFILE.phone}
-              </a>
-              <div className="flex items-center gap-3 rounded-xl border border-[#232a3b] bg-[#161b26]/60 p-4 text-sm text-slate-300 backdrop-blur">
-                <span className="rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 text-violet-400">
-                  <MapPin size={16} />
-                </span>
-                {PROFILE.location}
-              </div>
-            </div>
-
-            <div>
-              <div className="text-sm text-slate-500">Retrouvez-moi aussi sur</div>
-              <div className="mt-3 flex gap-3">
-                {socialLinks.map(({ icon: Icon, label, href }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label={label}
-                    className="rounded-lg border border-[#232a3b] bg-[#161b26]/60 p-3 text-slate-300 backdrop-blur transition-colors hover:border-slate-600 hover:text-slate-100"
-                  >
-                    <Icon size={18} />
-                  </a>
-                ))}
-              </div>
-            </div>
+        <div className="mt-12 space-y-4">
+          <CopyableRow
+            icon={<Mail size={16} />}
+            value={PROFILE.email}
+            href={`mailto:${PROFILE.email}`}
+            accent="text-cyan-400"
+          />
+          <CopyableRow
+            icon={<Phone size={16} />}
+            value={PROFILE.phone}
+            href={`tel:${PROFILE.phone.replace(/[^0-9+]/g, "")}`}
+            accent="text-emerald-400"
+          />
+          <div className="flex items-center gap-3 rounded-xl border border-[#232a3b] bg-[#161b26]/60 p-4 backdrop-blur">
+            <span className="rounded-lg border border-[#232a3b] bg-[#0e1420] p-2 text-violet-400">
+              <MapPin size={16} />
+            </span>
+            <span className="text-sm text-slate-300">{pick(PROFILE.location, lang)}</span>
           </div>
+        </div>
 
-          <ContactForm />
+        <div className="mt-10 text-center">
+          <div className="text-sm text-slate-500">{t.contactFindMe}</div>
+          <div className="mt-3 flex justify-center gap-3">
+            {socialLinks.map(({ icon: Icon, label, href }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                className="rounded-lg border border-[#232a3b] bg-[#161b26]/60 p-3 text-slate-300 backdrop-blur transition-colors hover:border-slate-600 hover:text-slate-100"
+              >
+                <Icon size={18} />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -1228,6 +1302,8 @@ function Contact() {
    ========================================================================= */
 
 function Footer() {
+  const { lang } = useLang();
+  const t = UI[lang];
   const socialLinks = [
     { icon: Github, label: "GitHub", href: PROFILE.socials.github },
     { icon: Linkedin, label: "LinkedIn", href: PROFILE.socials.linkedin },
@@ -1237,7 +1313,7 @@ function Footer() {
     <footer className="border-t border-[#171d2b] px-4 sm:px-6 py-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
         <p className="text-sm text-slate-500">
-          © {new Date().getFullYear()} {PROFILE.name}. Tous droits réservés.
+          © {new Date().getFullYear()} {PROFILE.name}. {t.footerRights}
         </p>
         <div className="flex gap-4">
           {socialLinks.map(({ icon: Icon, label, href }) => (
@@ -1263,18 +1339,25 @@ function Footer() {
    ========================================================================= */
 
 export default function Portfolio() {
+  const [lang, setLang] = useState("fr");
+  const toggleLang = useCallback(() => {
+    setLang((prev) => (prev === "fr" ? "en" : "fr"));
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#0b0f17] font-sans text-slate-200 antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
-      <Navbar />
-      <main>
-        <Hero />
-        <StatsBanner />
-        <Skills />
-        <Projects />
-        <Experience />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <LanguageContext.Provider value={{ lang, toggleLang }}>
+      <div className="min-h-screen bg-[#0b0f17] font-sans text-slate-200 antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
+        <Navbar />
+        <main>
+          <Hero />
+          <StatsBanner />
+          <Skills />
+          <Projects />
+          <Experience />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </LanguageContext.Provider>
   );
 }
