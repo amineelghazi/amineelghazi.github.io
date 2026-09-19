@@ -351,7 +351,10 @@ const PROFILE = {
   email: "amineelghazi100@hotmail.com",
   phone: "438-410-1304",
 
-  cvUrl: "/Amine_El_Ghazi_CV.pdf",
+  cvUrl: {
+     fr: "/Amine_El_Ghazi_CV.pdf",
+     en: "/Amine_El_Ghazi_CV_EN.pdf",
+  },
   socials: {
     github: "https://github.com/amineelghazi",
     linkedin: "https://linkedin.com/in/amineelghazi",
@@ -794,7 +797,7 @@ function Hero() {
               <ArrowUpRight size={16} />
             </button>
             <a
-              href={PROFILE.cvUrl}
+              href={pick(PROFILE.cvUrl, lang)}
               className="inline-flex items-center gap-2 rounded-xl border border-[#232a3b] bg-[#161b26]/60 px-5 py-3 text-sm font-medium text-slate-200 backdrop-blur transition-colors hover:border-slate-600"
             >
               <Download size={16} />
