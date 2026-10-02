@@ -3,8 +3,8 @@ import Reveal from "../../components/common/Reveal.jsx";
 import { useTr } from "../../hooks/useTr.js";
 import { UI } from "../../data/ui.js";
 import { CARD, CHIP } from "../../utils/styles.js";
+import ImageCarousel from "../../components/common/ImageCarousel.jsx";
 
-// A single repo is labelled "Source code"; several keep their own labels.
 function getCodeLinks(project, tr) {
   if (project.codeUrls.length === 1) {
     return [{ label: tr(UI.projects.code), url: project.codeUrls[0].url }];
@@ -15,6 +15,11 @@ function getCodeLinks(project, tr) {
 export default function ProjectCard({ project, index }) {
   const tr = useTr();
   const codeLinks = getCodeLinks(project, tr);
+  const images = project.images?.length
+    ? project.images
+    : project.image
+      ? [project.image]
+      : [];
 
   return (
     <Reveal
@@ -25,18 +30,18 @@ export default function ProjectCard({ project, index }) {
       className={`group flex flex-col overflow-hidden ${CARD} transition-colors duration-300 hover:border-slate-600`}
     >
       <div
-        className={`flex h-44 items-center justify-center overflow-hidden border-b border-[#232a3b] bg-gradient-to-br ${project.gradient}`}
+        className={`h-44 overflow-hidden border-b border-[#232a3b] bg-gradient-to-br ${project.gradient}`}
       >
-        <img
-          src={project.image}
-          alt={tr(project.title)}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        <ImageCarousel images={images} alt={tr(project.title)} />
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="text-lg font-medium text-slate-100">{tr(project.title)}</h3>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">{tr(project.description)}</p>
+        <h3 className="text-lg font-medium text-slate-100">
+          {tr(project.title)}
+        </h3>
+        <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">
+          {tr(project.description)}
+        </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {project.tags.map((tag) => (
@@ -59,7 +64,11 @@ export default function ProjectCard({ project, index }) {
               {repo.label}
             </a>
           ))}
-          {codeLinks.length === 0 && <span className="text-sm text-slate-500">{tr(UI.projects.noCode)}</span>}
+          {codeLinks.length === 0 && (
+            <span className="text-sm text-slate-500">
+              {tr(UI.projects.noCode)}
+            </span>
+          )}
         </div>
       </div>
     </Reveal>

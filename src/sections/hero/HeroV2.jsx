@@ -1,4 +1,5 @@
 import { useLang } from "../../hooks/useLang.js";
+import { scrollToId } from "../../utils/scroll.js";
 
 const copy = {
   fr: {
@@ -25,7 +26,7 @@ export function HeroV2() {
 
   return (
     <section
-      id="accueil"
+      id="hero"
       className="flex min-h-screen items-center px-6 pt-24"
     >
       <div className="mx-auto w-full max-w-5xl">
@@ -37,18 +38,18 @@ export function HeroV2() {
         </h1>
         <p className="mt-6 max-w-2xl text-lg text-slate-400">{t.subtitle}</p>
         <div className="mt-10 flex flex-wrap gap-4">
-          <a
-            href="#projets"
+          <button
+            onClick={() => scrollToId("projects")}
             className="rounded-lg bg-white px-5 py-2.5 font-medium text-slate-900 transition hover:bg-slate-200"
           >
             {t.ctaProjects}
-          </a>
-          <a
-            href="#contact"
+          </button>
+          <button
+            onClick={() => scrollToId("contact")}
             className="rounded-lg border border-slate-700 px-5 py-2.5 font-medium text-slate-200 transition hover:border-cyan-400 hover:text-cyan-300"
           >
             {t.ctaContact}
-          </a>
+          </button>
         </div>
       </div>
     </section>
