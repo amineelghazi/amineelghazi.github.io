@@ -1,36 +1,37 @@
 {
-  "name": "amineelghazi.github.io",
-  "private": true,
-  "version": "0.0.0",
+  "name": "portfolio",
   "type": "module",
-  "homepage": "https://amineelghazi.github.io",
+  "version": "0.0.1",
+  "packageManager": "pnpm@11.2.2",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "deploy": "vite build && gh-pages -d dist"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "framer-motion": "^13.4.0",
-    "lucide-react": "^1.47.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/react": "^6.0.4",
+    "@astrojs/tailwind": "^6.0.2",
+    "@fontsource-variable/montserrat": "^5.3.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "astro": "^7.3.2",
+    "firebase": "^12.19.0",
+    "ogl": "^1.0.11",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sharp": "^0.35.4",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "autoprefixer": "^10.6.1",
-    "eslint": "^10.10.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.6",
-    "gh-pages": "^6.3.0",
-    "globals": "^17.12.0",
-    "postcss": "^8.5.28",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.0"
+    "@types/node": "^26.5.1",
+    "prettier": "^3.8.3",
+    "prettier-plugin-astro": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }

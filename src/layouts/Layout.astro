@@ -1,0 +1,118 @@
+---
+import type { Lang } from "../data/i18n";
+import { PROFILE, SOCIALS } from "../data/profile.js";
+
+interface Props { title: string; description: string; lang: Lang }
+const { title, description, lang } = Astro.props;
+
+const site = "https://amineelghazi.github.io";
+const url = lang === "fr" ? `${site}/` : `${site}/en/`;
+const ogImage = `${site}/og.image.png`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: PROFILE.name,
+  url: site,
+  image: ogImage,
+  sameAs: SOCIALS.map((s) => s.href),
+  jobTitle: lang === "fr" ? "Développeur full-stack" : "Full-Stack Developer",
+  description,
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="canonical" href={url} />
+    <link rel="alternate" hreflang="fr" href={`${site}/`} />
+    <link rel="alternate" hreflang="en" href={`${site}/en/`} />
+    <link rel="alternate" hreflang="x-default" href={`${site}/`} />
+
+    <link
+      rel="preload"
+      href="/fonts/montserrat-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={url} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={PROFILE.name} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="bg-[--background] sm:px-28 lg:px-20 px-9">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @font-face {
+    font-family: "Montserrat Variable";
+    src: url("/fonts/montserrat-latin-wght-normal.woff2")
+      format("woff2-variations");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --background: #101010;
+    --sec: #a476ff;
+    --white: #dfdfdf;
+    --white-icon: #f3f3f398;
+    --white-icon-tr: #f3f3f310;
+  }
+
+  * {
+    font-family:
+      "Montserrat Variable",
+      -apple-system,
+      system-ui,
+      sans-serif;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  *::selection {
+    background-color: var(--sec);
+    color: var(--background);
+  }
+
+  /* Scrollbar styles */
+
+  ::-webkit-scrollbar {
+    width: 15px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--container);
+    border-radius: 30px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--background);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--pink);
+  }
+
+  /* Scrollbar styles for Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) var(--container);
+  }
+</style>

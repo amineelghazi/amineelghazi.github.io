@@ -1,0 +1,33 @@
+---
+import { EXPERIENCE } from "../data/experience.js";
+import { UI } from "../data/ui.js";
+import type { Lang } from "../data/i18n";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+
+<section id="experience" class="py-12 border-t border-[#ffffff10] text-[var(--white)]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">{UI.nav.experience[lang]}</h2>
+    <h3 class="text-4xl md:text-5xl font-medium mb-4">{UI.experience.title[lang]}</h3>
+    <p class="text-[var(--white-icon)] mb-10 max-w-2xl">{UI.experience.description[lang]}</p>
+
+    <ol class="relative border-l border-[#ffffff20] ml-2 space-y-10">
+      {EXPERIENCE.map((item) => (
+        <li class="relative pl-8">
+          <span
+            class:list={[
+              "absolute -left-[6px] top-2 size-3 rounded-full",
+              item.type === "work" ? "bg-[var(--sec)]" : "bg-[#A9FF5B]",
+            ]}
+          ></span>
+          <p class="text-sm text-[var(--white-icon)]">{item.period[lang]}</p>
+          <h4 class="text-xl font-semibold mt-1">{item.title[lang]}</h4>
+          <p class="text-sm text-[var(--sec)] mb-2">{item.org[lang]}</p>
+          <p class="text-[var(--white-icon)]">{item.description[lang]}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

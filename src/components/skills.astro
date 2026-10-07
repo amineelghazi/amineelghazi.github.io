@@ -1,0 +1,199 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import { SKILL_CATEGORIES, CERTIFICATIONS } from "../data/skills.js";
+import { UI } from "../data/ui.js";
+import type { Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+
+// Compétence -> nom du fichier dans public/svg (sans ".svg").
+// Si le fichier n'existe pas, une pastille avec les initiales est affichée.
+const iconFiles: Record<string, string> = {
+  "JavaScript / TypeScript": "javaScript",
+  Java: "java",
+  "C#": "csharp",
+  Python: "python",
+  SQL: "sql",
+  NestJS: "nestjs",
+  React: "react",
+  Unity: "unity",
+  Spring: "spring",
+  Flask: "flask",
+  PostgreSQL: "postgresql",
+  MongoDB: "mongodb",
+  SQLite: "sqlite",
+  "Git / GitHub": "git",
+  Docker: "docker",
+  "Linux / WSL": "linux",
+  "REST API": "rest",
+  "Agile / Scrum": "agile",
+};
+
+function iconFor(skill: string): string | null {
+  const file = iconFiles[skill];
+  if (!file) return null;
+  const full = path.join(process.cwd(), "public", "svg", `${file}.svg`);
+  return fs.existsSync(full) ? `/svg/${file}.svg` : null;
+}
+
+function monogram(skill: string): string {
+  const words = skill.split(/[\s/]+/).filter(Boolean);
+  if (words.length > 1) return (words[0][0] + words[1][0]).toUpperCase();
+  return skill.slice(0, 2);
+}
+
+// Classes écrites en entier : Tailwind ne détecte pas les noms construits dynamiquement.
+const accents = {
+  cyan: {
+    dot: "bg-cyan-400",
+    glow: "bg-cyan-500/15",
+    card: "hover:border-cyan-400/40",
+    tile: "hover:border-cyan-400/50 hover:bg-cyan-400/5",
+    mono: "bg-cyan-400/15 text-cyan-300",
+    badge: "text-cyan-300 border-cyan-400/30",
+  },
+  violet: {
+    dot: "bg-violet-400",
+    glow: "bg-violet-500/15",
+    card: "hover:border-violet-400/40",
+    tile: "hover:border-violet-400/50 hover:bg-violet-400/5",
+    mono: "bg-violet-400/15 text-violet-300",
+    badge: "text-violet-300 border-violet-400/30",
+  },
+  emerald: {
+    dot: "bg-emerald-400",
+    glow: "bg-emerald-500/15",
+    card: "hover:border-emerald-400/40",
+    tile: "hover:border-emerald-400/50 hover:bg-emerald-400/5",
+    mono: "bg-emerald-400/15 text-emerald-300",
+    badge: "text-emerald-300 border-emerald-400/30",
+  },
+};
+---
+
+<section
+  id="skills"
+  class="scroll-mt-24 py-12 border-t border-[#ffffff10] text-[var(--white)]"
+>
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">
+      {UI.skills.eyebrow[lang]}
+    </h2>
+    <h3 class="text-4xl md:text-5xl font-medium mb-4">
+      {UI.skills.title[lang]}
+    </h3>
+    <p class="text-[var(--white-icon)] mb-10 max-w-2xl">
+      {UI.skills.description[lang]}
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {
+        SKILL_CATEGORIES.map((cat, i) => {
+          const a = accents[cat.accent] ?? accents.violet;
+          return (
+            <div
+              class={`reveal relative overflow-hidden rounded-2xl border border-[var(--white-icon-tr)] bg-[#1414149c] p-6 ${a.card}`}
+              style={`transition-delay:${i * 80}ms`}
+            >
+              <div
+                class={`pointer-events-none absolute -top-16 -right-16 size-48 rounded-full blur-3xl ${a.glow}`}
+              />
+
+              <div class="relative flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                  <span class={`size-2.5 rounded-full ${a.dot}`} />
+                  <h4 class="text-xl font-semibold">{cat.title[lang]}</h4>
+                </div>
+                <span
+                  class={`text-xs px-2.5 py-0.5 rounded-full border ${a.badge}`}
+                >
+                  {cat.skills.length}
+                </span>
+              </div>
+
+              <ul class="relative grid grid-cols-2 gap-2.5">
+                {cat.skills.map((skill) => {
+                  const icon = iconFor(skill);
+                  return (
+                    <li
+                      class={`flex items-center gap-3 rounded-xl border border-[var(--white-icon-tr)] bg-white/[0.03] px-3 py-2.5 transition duration-300 hover:-translate-y-0.5 ${a.tile}`}
+                    >
+                      {icon ? (
+                        <img
+                          src={icon}
+                          alt=""
+                          width="22"
+                          height="22"
+                          class="size-[22px] shrink-0 object-contain"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span
+                          class={`size-[22px] shrink-0 flex items-center justify-center rounded-md text-[10px] font-semibold ${a.mono}`}
+                        >
+                          {monogram(skill)}
+                        </span>
+                      )}
+                      <span class="text-sm text-[var(--white)] leading-tight">
+                        {skill}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })
+      }
+    </div>
+
+    <div
+      class="reveal relative overflow-hidden mt-8 rounded-2xl border border-[var(--white-icon-tr)] bg-[#1414149c] p-6 md:p-8 hover:border-[#a476ff66]"
+    >
+      <div
+        class="pointer-events-none absolute -bottom-20 -left-20 size-56 rounded-full blur-3xl bg-[#a476ff]/10"
+      >
+      </div>
+
+      <div class="relative flex flex-wrap items-center gap-3 mb-2">
+        <h4 class="text-2xl font-medium">{UI.cert.title[lang]}</h4>
+      </div>
+      <p class="relative text-[var(--white-icon)] mb-8 max-w-2xl">
+        {UI.cert.description[lang]}
+      </p>
+
+      <ul class="relative space-y-6">
+        {
+          CERTIFICATIONS.map((cert) => (
+            <li>
+              <div class="flex items-baseline justify-between gap-4 mb-2">
+                <span class="text-sm md:text-base">{cert.name}</span>
+                <span class="text-sm font-medium text-[var(--sec)] whitespace-nowrap">
+                  {cert.level}
+                  {UI.cert.complete[lang]}
+                </span>
+              </div>
+              <div
+                class="h-2.5 rounded-full bg-[var(--white-icon-tr)] overflow-hidden"
+                role="progressbar"
+                aria-valuenow={cert.level}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-label={cert.name}
+              >
+                <div
+                  class="h-full rounded-full bg-gradient-to-r from-[#5e4491] via-[#a476ff] to-[#d9c7ff]"
+                  style={`width:${cert.level}%`}
+                />
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

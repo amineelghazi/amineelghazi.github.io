@@ -1,0 +1,355 @@
+---
+import { PROJECTS } from "../data/projects.js";
+import { SOCIALS } from "../data/profile.js";
+import { UI } from "../data/ui.js";
+import type { Lang } from "../data/i18n";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const github = SOCIALS.find((s) => s.icon === "github")?.href;
+
+const t = {
+  prev: lang === "fr" ? "Image précédente" : "Previous image",
+  next: lang === "fr" ? "Image suivante" : "Next image",
+  enlarge: lang === "fr" ? "Agrandir l'image" : "Enlarge image",
+  close: lang === "fr" ? "Fermer" : "Close",
+  goTo: lang === "fr" ? "Aller à l'image" : "Go to image",
+};
+
+const projects = PROJECTS.map((p) => ({
+  ...p,
+  gallery: p.images?.length ? p.images : [p.image],
+}));
+
+const arrowBtn =
+  "absolute top-1/2 -translate-y-1/2 z-10 size-10 flex items-center justify-center rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] text-white backdrop-blur hover:bg-[#101010] hover:border-[#a476ff66] transition md:opacity-0 group-hover:opacity-100 focus-visible:opacity-100";
+---
+
+<section
+  id="projects"
+  class="scroll-mt-24 py-12 border-t border-[#ffffff10] text-[var(--white)]"
+>
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">
+      {UI.projects.title[lang]}
+    </h2>
+    <h3 class="text-4xl md:text-5xl font-medium mb-4">
+      {UI.nav.projects[lang]}
+    </h3>
+    <p class="text-[var(--white-icon)] mb-10 max-w-2xl">
+      {UI.projects.description[lang]}
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {
+        projects.map((project, i) => {
+          const multi = project.gallery.length > 1;
+          return (
+            <article
+              class="reveal group flex flex-col rounded-2xl border border-[var(--white-icon-tr)] bg-[#1414149c] overflow-hidden hover:border-[#a476ff66]"
+              style={`transition-delay:${i * 100}ms`}
+            >
+              <div
+                data-carousel
+                data-images={JSON.stringify(project.gallery)}
+                data-alt={project.title[lang]}
+                class="relative overflow-hidden aspect-[16/10] bg-[#0b0b0b]"
+              >
+                <button
+                  type="button"
+                  data-open
+                  aria-label={`${t.enlarge} — ${project.title[lang]}`}
+                  class="absolute inset-0 w-full h-full cursor-zoom-in"
+                >
+                  <img
+                    data-img
+                    src={project.gallery[0]}
+                    alt={project.title[lang]}
+                    class="w-full h-full object-contain"
+                    loading="lazy"
+                  />
+                </button>
+
+                <span
+                  class="pointer-events-none absolute top-3 right-3 z-10 rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] px-2 py-1 text-xs text-[var(--white-icon)]"
+                  aria-hidden="true"
+                >
+                  ⤢
+                </span>
+
+                {multi && (
+                  <>
+                    <button
+                      type="button"
+                      data-prev
+                      aria-label={t.prev}
+                      class={`${arrowBtn} left-3`}
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      data-next
+                      aria-label={t.next}
+                      class={`${arrowBtn} right-3`}
+                    >
+                      ›
+                    </button>
+
+                    <span
+                      data-count
+                      class="pointer-events-none absolute top-3 left-3 z-10 rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] px-3 py-1 text-xs text-[var(--white)]"
+                    >
+                      1 / {project.gallery.length}
+                    </span>
+
+                    <div class="absolute bottom-3 inset-x-0 z-10 flex justify-center gap-2">
+                      {project.gallery.map((_, k) => (
+                        <button
+                          type="button"
+                          data-dot
+                          aria-label={`${t.goTo} ${k + 1}`}
+                          aria-current={k === 0 ? "true" : "false"}
+                          class="dot"
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div class="flex flex-col flex-1 p-6 space-y-4">
+                <h4 class="text-2xl font-semibold">{project.title[lang]}</h4>
+                <p class="text-sm text-[var(--white-icon)] leading-relaxed">
+                  {project.description[lang]}
+                </p>
+                <ul class="flex flex-wrap gap-2">
+                  {project.tags.map((tag) => (
+                    <li class="text-xs px-3 py-1 rounded-full border border-[#a476ff33] bg-[#a476ff12] text-[#cdb6ff]">
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+
+                <div class="mt-auto pt-2">
+                  {project.codeUrls.length > 0 ? (
+                    <div class="flex flex-wrap gap-2">
+                      {project.codeUrls.map((code) => (
+                        <a
+                          href={code.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="text-sm px-4 py-2 rounded-xl border border-[var(--white-icon-tr)] text-[var(--white-icon)] hover:text-white hover:bg-[var(--white-icon-tr)] transition"
+                        >
+                          {UI.projects.code[lang]} · {code.label} ↗
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <p class="text-xs italic text-[var(--white-icon)]">
+                      {UI.projects.noCode[lang]}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={github}
+      class="w-full flex items-center justify-center gap-2 mt-10 text-[var(--white-icon)] hover:text-white transition border border-[var(--white-icon-tr)] p-3 rounded-full bg-[#1414149c] hover:bg-[var(--white-icon-tr)]"
+    >
+      {UI.projects.more[lang]} GitHub ↗
+    </a>
+  </div>
+</section>
+
+<!-- Lightbox (agrandissement) -->
+<dialog
+  id="lightbox"
+  class="m-0 p-0 w-screen h-screen max-w-none max-h-none bg-transparent text-white backdrop:bg-black/90"
+>
+  <div
+    data-lb-bg
+    class="relative w-full h-full flex items-center justify-center p-4 md:p-10"
+  >
+    <img
+      id="lightbox-img"
+      src=""
+      alt=""
+      class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+    />
+
+    <button
+      type="button"
+      id="lightbox-close"
+      aria-label={t.close}
+      class="absolute top-4 right-4 size-11 flex items-center justify-center rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] text-xl hover:border-[#a476ff66] transition"
+    >
+      ✕
+    </button>
+    <button
+      type="button"
+      id="lightbox-prev"
+      aria-label={t.prev}
+      class="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] text-2xl hover:border-[#a476ff66] transition"
+    >
+      ‹
+    </button>
+    <button
+      type="button"
+      id="lightbox-next"
+      aria-label={t.next}
+      class="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 size-12 flex items-center justify-center rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] text-2xl hover:border-[#a476ff66] transition"
+    >
+      ›
+    </button>
+    <span
+      id="lightbox-count"
+      class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-[#101010]/80 border border-[var(--white-icon-tr)] px-4 py-1 text-sm"
+    ></span>
+  </div>
+</dialog>
+
+<style>
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #ffffff55;
+    transition:
+      background 0.2s ease,
+      transform 0.2s ease;
+  }
+  .dot:hover {
+    background: #ffffffaa;
+  }
+  .dot[aria-current="true"] {
+    background: var(--sec);
+    transform: scale(1.3);
+  }
+</style>
+
+<script>
+  type Active = {
+    images: string[];
+    alt: string;
+    index: number;
+    sync: (i: number) => void;
+  };
+
+  const dialog = document.getElementById("lightbox") as HTMLDialogElement | null;
+  const lbBg = dialog?.querySelector<HTMLElement>("[data-lb-bg]");
+  const lbImg = document.getElementById("lightbox-img") as HTMLImageElement;
+  const lbCount = document.getElementById("lightbox-count") as HTMLElement;
+  const lbPrev = document.getElementById("lightbox-prev") as HTMLButtonElement;
+  const lbNext = document.getElementById("lightbox-next") as HTMLButtonElement;
+  const lbClose = document.getElementById("lightbox-close") as HTMLButtonElement;
+
+  let active: Active | null = null;
+
+  const preload = (src: string) => {
+    const i = new Image();
+    i.src = src;
+  };
+
+  function addSwipe(el: Element, onLeft: () => void, onRight: () => void) {
+    let startX = 0;
+    el.addEventListener(
+      "touchstart",
+      (e) => {
+        startX = (e as TouchEvent).changedTouches[0].clientX;
+      },
+      { passive: true }
+    );
+    el.addEventListener(
+      "touchend",
+      (e) => {
+        const dx = (e as TouchEvent).changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 40) (dx < 0 ? onLeft : onRight)();
+      },
+      { passive: true }
+    );
+  }
+
+  function renderLightbox() {
+    if (!active) return;
+    const total = active.images.length;
+    lbImg.src = active.images[active.index];
+    lbImg.alt = `${active.alt} (${active.index + 1}/${total})`;
+    lbCount.textContent = `${active.index + 1} / ${total}`;
+    const multi = total > 1;
+    lbPrev.style.display = multi ? "" : "none";
+    lbNext.style.display = multi ? "" : "none";
+    lbCount.style.display = multi ? "" : "none";
+  }
+
+  function lightboxGo(delta: number) {
+    if (!active) return;
+    const n = active.images.length;
+    active.index = (active.index + delta + n) % n;
+    active.sync(active.index);
+    renderLightbox();
+    preload(active.images[(active.index + 1) % n]);
+  }
+
+  lbPrev?.addEventListener("click", () => lightboxGo(-1));
+  lbNext?.addEventListener("click", () => lightboxGo(1));
+  lbClose?.addEventListener("click", () => dialog?.close());
+  lbBg?.addEventListener("click", (e) => {
+    if (e.target === lbBg) dialog?.close();
+  });
+  dialog?.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") lightboxGo(-1);
+    if (e.key === "ArrowRight") lightboxGo(1);
+  });
+  dialog?.addEventListener("close", () => {
+    document.body.style.overflow = "";
+    active = null;
+  });
+  if (dialog) addSwipe(dialog, () => lightboxGo(1), () => lightboxGo(-1));
+
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach((root) => {
+    const images: string[] = JSON.parse(root.dataset.images ?? "[]");
+    const alt = root.dataset.alt ?? "";
+    const img = root.querySelector<HTMLImageElement>("[data-img]")!;
+    const count = root.querySelector<HTMLElement>("[data-count]");
+    const dots = root.querySelectorAll<HTMLButtonElement>("[data-dot]");
+    let index = 0;
+
+    const go = (i: number) => {
+      const n = images.length;
+      index = (i + n) % n;
+      img.src = images[index];
+      img.alt = n > 1 ? `${alt} (${index + 1}/${n})` : alt;
+      if (count) count.textContent = `${index + 1} / ${n}`;
+      dots.forEach((d, k) =>
+        d.setAttribute("aria-current", String(k === index))
+      );
+      if (n > 1) preload(images[(index + 1) % n]);
+    };
+
+    root.querySelector("[data-prev]")?.addEventListener("click", () => go(index - 1));
+    root.querySelector("[data-next]")?.addEventListener("click", () => go(index + 1));
+    dots.forEach((d, k) => d.addEventListener("click", () => go(k)));
+
+    if (images.length > 1) {
+      addSwipe(root, () => go(index + 1), () => go(index - 1));
+    }
+
+    root.querySelector("[data-open]")?.addEventListener("click", () => {
+      if (!dialog) return;
+      active = { images, alt, index, sync: go };
+      renderLightbox();
+      document.body.style.overflow = "hidden";
+      dialog.showModal();
+    });
+  });
+</script>

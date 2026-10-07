@@ -2,7 +2,6 @@ export const PROFILE = {
   name: "Amine El Ghazi",
   location: { fr: "Montréal, QC, Canada", en: "Montreal, QC, Canada" },
   email: "amineelghazi100@hotmail.com",
-  phone: "438-410-1304",
 };
 
 export const SOCIALS = [
