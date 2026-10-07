@@ -1,5 +1,6 @@
 export const PROJECTS = [
   {
+    more: { fr: "Plus de projets sur", en: "More projects on" },
     id: "u-owl",
     title: {
       fr: "U-Owl - Location de camions en temps réel",
@@ -10,7 +11,7 @@ export const PROJECTS = [
       en: "A college truck-rental project featuring real-time visualization of stock availability on an interactive map. Built the frontend (live location tracking, UX), the frontend-backend communication and authentication, contributed to the backend, and containerized the app with Docker.",
     },
     tags: ["React", "TypeScript", "Vite", "NestJS", "Docker"],
-    image: "/u-owl.png",
+    image: "/u-owl/u-owl.png",
     codeUrls: [
       {
         label: "Frontend",
@@ -31,15 +32,19 @@ export const PROJECTS = [
       en: "A college platform for discovering and tracking movies and TV shows (detail pages, favorites, comments) integrating an external API for metadata. Product Owner for a team of 6 developers (Jira management, epics, requirements specification); built email account verification and the end-to-end favorites feature.",
     },
     tags: ["C#", "WPF", "SQL", "Jira", "Product Management"],
-    image: `${import.meta.env.BASE_URL}cinetrack.png`, 
+    // U-Owl
+    image: "/u-owl.png",
+
+    // CineTrack
+    image: "/cinetrack/cinetrack.png",
     images: [
-      `${import.meta.env.BASE_URL}cinetrack.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_anime_description.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_anime_loading.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_password_reset.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_user_profile.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_user_settings.png`,
-      `${import.meta.env.BASE_URL}cinetrack/cinetrack_userAccount_verification.png`,
+      "/cinetrack/cinetrack.png",
+      "/cinetrack/cinetrack_anime_description.png",
+      "/cinetrack/cinetrack_anime_loading.png",
+      "/cinetrack/cinetrack_password_reset.png",
+      "/cinetrack/cinetrack_user_profile.png",
+      "/cinetrack/cinetrack_user_settings.png",
+      "/cinetrack/cinetrack_userAccount_verification.png",
     ],
     codeUrls: [],
     gradient: "from-violet-500/20 via-violet-500/5 to-transparent",

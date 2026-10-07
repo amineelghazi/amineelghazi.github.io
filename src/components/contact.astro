@@ -1,0 +1,68 @@
+---
+import { PROFILE, SOCIALS } from "../data/profile.js";
+import { UI } from "../data/ui.js";
+import type { Lang } from "../data/i18n";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+const rows = [
+  { label: UI.contact.email[lang], value: PROFILE.email, href: `mailto:${PROFILE.email}` },
+];
+---
+
+<section id="contact" class="w-full py-12 border-t border-[#ffffff10]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">{UI.contactCta[lang]}</h2>
+    <h3 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-6">{UI.contact.title[lang]}</h3>
+    <p class="text-[var(--white-icon)] mb-8 max-w-2xl">{UI.contact.description[lang]}</p>
+
+    <div class="space-y-4 max-w-xl">
+      {rows.map((row) => (
+        <div class="flex items-center justify-between gap-4 rounded-xl border border-[var(--white-icon-tr)] bg-[#1414149c] px-4 py-3">
+          <div>
+            <p class="text-xs text-[var(--white-icon)]">{row.label}</p>
+            <a href={row.href} class="text-[var(--white)] hover:text-[var(--sec)] transition">{row.value}</a>
+          </div>
+          <button
+            type="button"
+            data-copy={row.value}
+            data-label={UI.contact.copy[lang]}
+            data-copied={UI.contact.copied[lang]}
+            class="text-sm px-3 py-1 rounded-lg border border-[var(--white-icon-tr)] text-[var(--white-icon)] hover:text-white hover:bg-[var(--white-icon-tr)] transition"
+          >
+            {UI.contact.copy[lang]}
+          </button>
+        </div>
+      ))}
+
+      <p class="text-sm text-[var(--white-icon)]">
+        {UI.contact.location[lang]} : <span class="text-[var(--white)]">{PROFILE.location[lang]}</span>
+      </p>
+
+      <p class="text-sm text-[var(--white-icon)]">
+        {UI.contact.findMe[lang]}
+        {SOCIALS.map((s, i) => (
+          <>
+            {i > 0 && " · "}
+            <a href={s.href} target="_blank" rel="noopener noreferrer" class="text-[var(--white)] hover:text-[var(--sec)] transition">{s.label}</a>
+          </>
+        ))}
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? "");
+        btn.textContent = btn.dataset.copied ?? "✓";
+        setTimeout(() => (btn.textContent = btn.dataset.label ?? "Copy"), 1500);
+      } catch {
+        /* clipboard indisponible */
+      }
+    });
+  });
+</script>

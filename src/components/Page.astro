@@ -1,0 +1,29 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "./nav.astro";
+import Home from "./home.astro";
+import Stats from "./stats.astro";
+import Skills from "./skills.astro";
+import Projects from "./projects.astro";
+import Experience from "./experience.astro";
+import Contact from "./contact.astro";
+import Footer from "./footer.astro";
+import { UI } from "../data/ui.js";
+import type { Lang } from "../data/i18n";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+
+<Layout lang={lang} title={UI.meta.title[lang]} description={UI.meta.description[lang]}>
+  <Nav lang={lang} />
+  <main>
+    <Home lang={lang} />
+    <Stats lang={lang} />
+    <Skills lang={lang} />
+    <Projects lang={lang} />
+    <Experience lang={lang} />
+    <Contact lang={lang} />
+  </main>
+  <Footer lang={lang} />
+</Layout>
